@@ -4,7 +4,7 @@
 clc; clear;
 
 % load full colour image
-img = im2double(imread('Testing Images/training_image.jpg'));
+img = im2double(imread('Training Images/training_image.jpg'));
 
 % Extract the color channels corresponding to the Bayer pattern
 r = img(:,:,1);
@@ -33,17 +33,41 @@ gbrg_patch = generate_gbrg_patch(img, r, g, b);
 bggr_patch = generate_bggr_patch(img, r, g, b);
 
 % Save images using the various patches
-imwrite(rggb_patch, 'Generated Images/rggb_image.png', 'png')
-imwrite(grbg_patch, 'Generated Images/grbg_image.png', 'png')
-imwrite(gbrg_patch, 'Generated Images/gbrg_image.png', 'png')
-imwrite(bggr_patch, 'Generated Images/bggr_image.png', 'png')
-
+% imwrite(rggb_patch, 'Generated Images/rggb_image.png', 'png')
+% imwrite(grbg_patch, 'Generated Images/grbg_image.png', 'png')
+% imwrite(gbrg_patch, 'Generated Images/gbrg_image.png', 'png')
+% imwrite(bggr_patch, 'Generated Images/bggr_image.png', 'png')
 
 % Calculate coefficents
 [g_rggb,b_rggb] = rggb_coefficents(r_window,g_window,b_window,g_col,b_col); 
 [r_grbg,b_grbg] = grbg_coefficents(r_window,g_window,b_window,r_col,b_col);
 [r_gbrg,b_gbrg] = gbrg_coefficents(r_window,g_window,b_window,r_col,b_col);
+[r_bggr,g_bggr] = bggr_coefficents(r_window,g_window,b_window,r_col,g_col);
 
+
+% ---- Perform Linear Regresion ----
+input_image = im2double(imread('testing_image.jpeg'));
+[m, n, z] = size(input_image);
+
+r_rep = repmat ([1 0;0 0],[round(m/2),round(n/2)]);
+
+if(size(r_rep, 1) > m)
+    r_rep(m+1,:) = [];
+end
+
+if(r)
+
+
+r_channel = input_image(:,:,1).*r_rep;
+
+g_rep = repmat ([0 1;1 0],[round(m/2),round(n/2)]);
+g_channel = input_image(:,:,2).*g_rep;
+
+b_rep = repmat ([0 0;0 1],[round(m/2),round(n/2)]);
+b_channel = input_image(:,:,3).*b_rep;
+
+bw_image = r_channel(:,:) + g_channel(:,:) + b_channel(:,:);
+imwrite(bw_image,"bw_image.png");
 
 
 % ------------------------------------- Functions -------------------------------------
@@ -111,7 +135,7 @@ end
 
 
 function [r_grbg,b_grbg] = grbg_coefficents(r_window,g_window,b_window,r_col,b_col)
-    % rggb matrix -> [r g;g b]
+    % grbg matrix -> [g r;b g]
     r_rep = repmat ([0 1;0 0], [3,3]);
     g_rep = repmat ([1 0;0 1], [3,3]);
     b_rep = repmat ([0 0;1 0], [3,3]);
@@ -133,7 +157,7 @@ function [r_grbg,b_grbg] = grbg_coefficents(r_window,g_window,b_window,r_col,b_c
 end
 
 function [r_gbrg,b_gbrg] = gbrg_coefficents(r_window,g_window,b_window,r_col,b_col)
-    % rggb matrix -> [r g;g b]
+    % gbrg matrix -> [g b;r g]
     r_rep = repmat ([0 1;0 0], [3,3]);
     g_rep = repmat ([1 0;0 1], [3,3]);
     b_rep = repmat ([0 0;1 0], [3,3]);
@@ -155,13 +179,13 @@ function [r_gbrg,b_gbrg] = gbrg_coefficents(r_window,g_window,b_window,r_col,b_c
 end
 
 function [r_bggr,g_bggr] = bggr_coefficents(r_window,g_window,b_window,r_col,g_col)
-    % rggb matrix -> [r g;g b]
+    % bggr matrix -> [b g;g r]
     r_rep = repmat ([0 1;0 0], [3,3]);
     g_rep = repmat ([1 0;0 1], [3,3]);
     b_rep = repmat ([0 0;1 0], [3,3]);
 
     % Remove the last row and column in the array to create a 5x5 matrix
-    % as shown 
+    % as shown in the lab instructions
     r_rep(6,:) = []; r_rep(:,6) = [];
     g_rep(6,:) = []; g_rep(:,6) = [];
     b_rep(6,:) = []; b_rep(:,6) = [];

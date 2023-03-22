@@ -4,7 +4,7 @@
 clc; clear;
 
 % load full colour image
-img = im2double(imread('Testing Images/training_image.jpg'));
+img = im2double(imread('Training Images/training_image.jpg'));
 
 % Extract the color channels corresponding to the Bayer pattern
 r = img(:,:,1);
@@ -33,17 +33,70 @@ gbrg_patch = generate_gbrg_patch(img, r, g, b);
 bggr_patch = generate_bggr_patch(img, r, g, b);
 
 % Save images using the various patches
-imwrite(rggb_patch, 'Generated Images/rggb_image.png', 'png')
-imwrite(grbg_patch, 'Generated Images/grbg_image.png', 'png')
-imwrite(gbrg_patch, 'Generated Images/gbrg_image.png', 'png')
-imwrite(bggr_patch, 'Generated Images/bggr_image.png', 'png')
-
+% imwrite(rggb_patch, 'Generated Images/rggb_image.png', 'png')
+% imwrite(grbg_patch, 'Generated Images/grbg_image.png', 'png')
+% imwrite(gbrg_patch, 'Generated Images/gbrg_image.png', 'png')
+% imwrite(bggr_patch, 'Generated Images/bggr_image.png', 'png')
 
 % Calculate coefficents
 [g_rggb,b_rggb] = rggb_coefficents(r_window,g_window,b_window,g_col,b_col); 
 [r_grbg,b_grbg] = grbg_coefficents(r_window,g_window,b_window,r_col,b_col);
 [r_gbrg,b_gbrg] = gbrg_coefficents(r_window,g_window,b_window,r_col,b_col);
 [r_bggr,g_bggr] = bggr_coefficents(r_window,g_window,b_window,r_col,g_col);
+
+
+% ---- Perform Linear Regresion ----
+input_image = im2double(imread('testing_image.jpeg'));
+r = input_image(:,:,1);
+g = input_image(:,:,2);
+b = input_image(:,:,3);
+[m, n, z] = size(input_image);
+
+r_rep = repmat ([1 0;0 0],[round(m/2),round(n/2)]);
+g_rep = repmat ([0 1;1 0],[round(m/2),round(n/2)]);
+b_rep = repmat ([0 0;0 1],[round(m/2),round(n/2)]);
+
+ % resize if needed
+% if(size(r_rep, 1) > m)
+%     r_rep(m+1,:) = [];
+% end
+% 
+% if(size(r_rep, 2) > n)
+%     r_rep(:,n+1) = [];
+% end
+% 
+% if(size(g_rep, 1) > m)
+%     g_rep(m+1,:) = [];
+% end
+% 
+% if(size(g_rep, 2) > n)
+%     g_rep(:,n+1) = [];
+% end
+% 
+% if(size(b_rep, 1) > m)
+%     b_rep(m+1,:) = [];
+% end
+% 
+% if(size(b_rep, 2) > n)
+%     b_rep(:,n+1) = [];
+% end
+% 
+% r_channel1 = input_image(:,:,1).*r_rep;
+% g_channel2 = input_image(:,:,2).*g_rep;
+% b_channel3 = input_image(:,:,3).*b_rep;
+
+patch = generate_rggb_patch(input_image, r, g, b);
+r_channel = patch(:,:,1);
+g_channel = patch(:,:,2);
+b_channel = patch(:,:,3);
+
+
+% Generate black and white image
+bw_image = r_channel(:,:) + g_channel(:,:) + b_channel(:,:);
+imwrite(bw_image,"bw_image.png");
+
+
+bw_padded = padarray(bw_image,[3 3],'symmetric');
 
 
 % ------------------------------------- Functions -------------------------------------
