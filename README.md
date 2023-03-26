@@ -1,6 +1,7 @@
-Bayer Demosaicing Using Linear Regression
+# Bayer Demosaicing Using Linear Regression
 
-How to Run the Program
+
+## How to Run the Program
 
 1. Ensure you have MATLAB installed on your computer. This code was tested on MATLAB R2022b.
 2. Install the Image Processing Toolbox.
