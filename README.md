@@ -14,6 +14,6 @@
 
 <p>5. Run the script.</p>
 
-<h2>🛡️ License:</h2>
+<h2>License:</h2>
 
 This project is licensed under the MIT
