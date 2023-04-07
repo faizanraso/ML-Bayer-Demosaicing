@@ -1,6 +1,5 @@
 % ---------------------------------------------------------------------------------------
-% This script is desined for input/testing images that are Single channel
-% Bayer Images  (Raw Mosaic Data)
+% This script is desined for input/testing images that are in RGB format
 % ---------------------------------------------------------------------------------------
 
 % CE 3SK3 - Project 3
@@ -9,13 +8,12 @@
 clc; clear;
 
 training_img_name = 'training.jpg';
-test_img_name = 'test1.png';
-
+test_img_name = 'test_rgb.jpeg';
 
 % load full colour image
 training_img = im2double(imread(training_img_name));
 
-% Extract the colour channels
+% Extract the colour channels corresponding to the Bayer pattern
 r = training_img(:,:,1);
 g = training_img(:,:,2);
 b = training_img(:,:,3);
@@ -38,41 +36,29 @@ b_window = im2col(padarray(b,[2,2],'symmetric', 'both'),[5 5]);
 
 % ---- Process a test image ---
 input_img = im2double(imread(test_img_name));
+r = input_img(:,:,1);
+g = input_img(:,:,2);
+b = input_img(:,:,3);
 [m, n, ~] = size(input_img);
-pattern_img = im2double(input_img);
 
-[m, n, ~] = size(pattern_img);
-r_channel = zeros(m, n);
-g_channel = zeros(m, n);
-b_channel = zeros(m, n);
+% Can change function for a different patch pattern -- this function is
+% used for testing purposes (creating a bayer image)
+pattern_img = im2double(generate_rggb_patch(input_img, r, g, b));
+figure(1);
+imshow(pattern_img)
 
-% RGGB input - use this
-r_channel(1:2:end, 1:2:end) = pattern_img(1:2:end, 1:2:end);
-g_channel(1:2:end, 2:2:end) = pattern_img(1:2:end, 2:2:end);
-g_channel(2:2:end, 1:2:end) = pattern_img(2:2:end, 1:2:end);
-b_channel(2:2:end, 2:2:end) = pattern_img(2:2:end, 2:2:end);
+% use this if input image is already in bayer pattern format
+% pattern_img = im2double(input_img); 
 
-% BGGR Input - use this
-% r_channel(2:2:end, 2:2:end) = pattern_img(2:2:end, 2:2:end);
-% g_channel(1:2:end, 2:2:end) = pattern_img(1:2:end, 2:2:end);
-% g_channel(2:2:end, 1:2:end) = pattern_img(2:2:end, 1:2:end);
-% b_channel(1:2:end, 1:2:end) = pattern_img(1:2:end, 1:2:end);
-
-% GRBG Input - use this
-% r_channel(1:2:end, 2:2:end) = pattern_img(1:2:end, 2:2:end);
-% g_channel(1:2:end, 1:2:end) = pattern_img(1:2:end, 1:2:end);
-% g_channel(2:2:end, 2:2:end) = pattern_img(2:2:end, 2:2:end);
-% b_channel(2:2:end, 1:2:end) = pattern_img(2:2:end, 1:2:end);
-
-% GBRG Input - use this
-% r_channel(2:2:end, 1:2:end) = pattern_img(2:2:end, 1:2:end);
-% g_channel(1:2:end, 1:2:end) = pattern_img(1:2:end, 1:2:end);
-% g_channel(2:2:end, 2:2:end) = pattern_img(2:2:end, 2:2:end);
-% b_channel(1:2:end, 2:2:end) = pattern_img(1:2:end, 2:2:end);
-
+r_channel = pattern_img(:,:,1);
+g_channel = pattern_img(:,:,2);
+b_channel = pattern_img(:,:,3);
 
 % Generate black and white image
 bw_image = r_channel(:,:) + g_channel(:,:) + b_channel(:,:);
+figure(2);
+imshow(bw_image)
+
 
 % Pad the black and white image - This is to ensure the window aligns with
 % the targeted pixel
@@ -117,12 +103,12 @@ end
 output_img = cat(3,r_channel,g_channel,b_channel);
 
 % Original image
-figure(1);
-imshow(test_img_name)
-title('Original Image')
+figure(3);
+imshow(test_img_name);
+title('Original Image');
 
 % Reconstructed image using linear regression
-figure(2);
+figure(4);
 subplot(1,2,1)
 imshow(output_img)
 title('Demosaiced Image Using Linear Regression')
@@ -133,12 +119,11 @@ subplot(1,2,2)
 imshow(matlab_output)
 title('Demosaiced Image Using Matlab')
 
-% rmse = sqrt(immse(im2uint8(output_img),im2uint8(input_img)));
-% matlab_rmse = sqrt(immse(matlab_output, im2uint8(input_img)));
-% 
-% fprintf("RMSE using linear regression: %.3f \n", rmse)
-% fprintf("RMSE using demosaic function: %.3f \n", matlab_rmse)
+rmse = sqrt(immse(im2uint8(output_img),im2uint8(input_img)));
+matlab_rmse = sqrt(immse(matlab_output, im2uint8(input_img)));
 
+fprintf("RMSE using linear regression: %.3f \n", rmse)
+fprintf("RMSE using demosaic function: %.3f \n", matlab_rmse)
 
 % ------------------------------------- Functions -------------------------------------
 
@@ -249,4 +234,3 @@ function [r_bggr,g_bggr] = bggr_coefficients(r_window,g_window,b_window,r_col,g_
     r_bggr = (X'*X)\X'*(r_col');
     g_bggr = (X'*X)\X'*(g_col');
 end
-
