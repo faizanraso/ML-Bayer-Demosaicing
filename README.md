@@ -18,8 +18,9 @@
 <h2>Example</h2>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/59986120/230692294-dfbdf6d9-99ba-474e-902c-28e01f44f51f.png" width="200">
-  <img src="https://user-images.githubusercontent.com/59986120/230692300-94e9f70d-0a6c-41c6-aae4-ad9ea472f3b6.png" width="200">
+  <img src="https://user-images.githubusercontent.com/59986120/230692294-dfbdf6d9-99ba-474e-902c-28e01f44f51f.png" width="300">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://user-images.githubusercontent.com/59986120/230692300-94e9f70d-0a6c-41c6-aae4-ad9ea472f3b6.png" width="300">
 </p>
 
 
