@@ -19,10 +19,14 @@
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/59986120/230692294-dfbdf6d9-99ba-474e-902c-28e01f44f51f.png" width="300">
-  &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="https://user-images.githubusercontent.com/59986120/230692300-94e9f70d-0a6c-41c6-aae4-ad9ea472f3b6.png" width="300">
 </p>
 
+<p>
+  The image above shows the original raw mosaic data. The image is sorted in the RGGB pattern and converted to a single channel, monochrome image. The
+  image on the right shows the results of using a linear regression based demosaicing algoriithm to reconstruct the colours of the image.
+</p>
 
 
 <h2>License:</h2>
